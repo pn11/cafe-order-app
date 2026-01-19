@@ -37,7 +37,7 @@ export const fetchMenuData = async () => {
   }
 };
 
-export const submitOrder = async (orderData) => {
+export const submitOrder = async (orderData, apiKey) => {
   try {
     if (!APPS_SCRIPT_URL) {
       throw new Error('Apps Script URL not configured. Please set REACT_APP_APPS_SCRIPT_URL in your .env file');
@@ -49,7 +49,7 @@ export const submitOrder = async (orderData) => {
       headers: {
         'Content-Type': 'text/plain',
       },
-      body: JSON.stringify(orderData)
+      body: JSON.stringify({ ...orderData, apiKey })
     });
 
     // With no-cors mode, we can't read the response body

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import MenuList from './components/MenuList';
 import Cart from './components/Cart';
 import CheckoutForm from './components/CheckoutForm';
@@ -9,6 +9,12 @@ function App() {
   const [currentView, setCurrentView] = useState('menu'); // 'menu', 'cart', 'checkout', 'success'
   const [cartItems, setCartItems] = useState([]);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
+
+  // Read API key from URL parameter (e.g., ?key=your_secret_key)
+  const apiKey = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('key');
+  }, []);
 
   const addToCart = (item) => {
     setCartItems(prevItems => {
@@ -47,7 +53,7 @@ function App() {
 
   const handleSubmitOrder = async (orderData) => {
     try {
-      await submitOrder(orderData);
+      await submitOrder(orderData, apiKey);
       setOrderSubmitted(true);
       setCurrentView('success');
       setCartItems([]);
