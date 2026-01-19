@@ -37,8 +37,8 @@ function handleRequest(e, method) {
       const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
       const sheet = spreadsheet.getSheets()[0]; // Gets first sheet (Sheet1)
 
-      // Prepare the row data
-      const timestamp = new Date().toISOString();
+      // Prepare the row data (JST)
+      const timestamp = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
 
       // Format items as "MenuName x Quantity" list
       const itemsList = data.items.map(item => item.name + ' x' + item.quantity).join(', ');
