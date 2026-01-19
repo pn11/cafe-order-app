@@ -1,6 +1,7 @@
 const API_KEY = process.env.REACT_APP_GOOGLE_SHEETS_API_KEY;
 const MENU_SHEET_ID = process.env.REACT_APP_MENU_SHEET_ID;
 const ORDER_SHEET_ID = process.env.REACT_APP_ORDER_SHEET_ID;
+const APPS_SCRIPT_URL = process.env.REACT_APP_APPS_SCRIPT_URL;
 
 export const fetchMenuData = async () => {
   try {
@@ -38,35 +39,24 @@ export const fetchMenuData = async () => {
 
 export const submitOrder = async (orderData) => {
   try {
-    const timestamp = new Date().toISOString();
-    const orderRow = [
-      timestamp,
-      orderData.customerName || '',
-      orderData.customerPhone || '',
-      JSON.stringify(orderData.items),
-      orderData.total,
-      orderData.notes || '',
-      'Pending'
-    ];
-    
-    const response = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${ORDER_SHEET_ID}/values/Sheet1:append?valueInputOption=RAW&key=${API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          values: [orderRow]
-        })
-      }
-    );
-    
-    if (!response.ok) {
-      throw new Error('Failed to submit order');
+    if (!APPS_SCRIPT_URL) {
+      throw new Error('Apps Script URL not configured. Please set REACT_APP_APPS_SCRIPT_URL in your .env file');
     }
-    
-    return await response.json();
+
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    // With no-cors mode, we can't read the response body
+    // A successful submission will have type 'opaque' and status 0
+    // If the request fails entirely, it will throw an error
+
+    return { success: true, message: 'Order submitted' };
   } catch (error) {
     console.error('Error submitting order:', error);
     throw error;

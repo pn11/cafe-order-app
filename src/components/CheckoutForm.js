@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 const CheckoutForm = ({ cartItems, total, onSubmitOrder, onCancel }) => {
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
-    phone: '',
     notes: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +22,6 @@ const CheckoutForm = ({ cartItems, total, onSubmitOrder, onCancel }) => {
     try {
       await onSubmitOrder({
         customerName: customerInfo.name,
-        customerPhone: customerInfo.phone,
         notes: customerInfo.notes,
         items: cartItems,
         total: total
@@ -58,18 +56,6 @@ const CheckoutForm = ({ cartItems, total, onSubmitOrder, onCancel }) => {
             id="name"
             name="name"
             value={customerInfo.name}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="phone">Phone Number *</label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={customerInfo.phone}
             onChange={handleInputChange}
             required
           />
