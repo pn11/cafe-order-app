@@ -65,7 +65,8 @@ function App() {
       setCurrentView('success');
       setCartItems([]);
     } catch (error) {
-      alert('Failed to submit order. Please try again.');
+      console.error('Order submission error:', error);
+      alert(error.message || 'Failed to submit order. Please try again.');
     }
   };
 
