@@ -2,6 +2,8 @@
 
 A React-based mobile ordering application that integrates with Google Sheets for menu management and order processing.
 
+[日本語](./README.ja.md)
+
 ## Features
 
 - **Menu Display**: Fetches menu items from Google Sheets with categories, descriptions, prices, and images
@@ -63,6 +65,47 @@ REACT_APP_ORDER_SHEET_ID=your_order_spreadsheet_id
 
 **Getting Sheet IDs**: 
 From the sheet URL `https://docs.google.com/spreadsheets/d/SHEET_ID/edit`, the `SHEET_ID` is the long string between `/d/` and `/edit`.
+
+### 5. Token Authentication Setup
+
+The app uses token-based authentication to restrict access. Use the `generate-token.sh` script to create access credentials.
+
+#### Prerequisites
+
+```bash
+brew install qrencode  # Optional, for QR code generation
+```
+
+#### Generate Token
+
+```bash
+./scripts/generate-token.sh
+```
+
+Or with a custom base URL:
+
+```bash
+./scripts/generate-token.sh https://your-domain.com/cafe-order-app
+```
+
+#### What the Script Does
+
+1. Generates a random 64-character hex token
+2. Creates a full URL with the token as a query parameter (`?key=TOKEN`)
+3. Generates a QR code image (`access-qr.png`) if `qrencode` is installed
+4. Updates `AUTH_TOKEN` in `apps-script-generated.js`
+
+#### Next Steps After Generation
+
+1. Copy the contents of `apps-script-generated.js` to Google Apps Script
+2. Deploy the Apps Script as a web app
+3. Share the QR code (`access-qr.png`) with authorized users
+
+#### Security Notes
+
+- **Do NOT commit** `apps-script-generated.js` or `access-qr.png` to git
+- Regenerate the token if it becomes compromised
+- Only share the QR code or URL with authorized users
 
 ## Available Scripts
 
