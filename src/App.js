@@ -10,10 +10,17 @@ function App() {
   const [cartItems, setCartItems] = useState([]);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
 
-  // Read API key from URL parameter (e.g., ?key=your_secret_key)
+  // Read API key from URL parameter (e.g., ?key=your_secret_key) or sessionStorage
   const apiKey = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
-    return params.get('key');
+    const urlKey = params.get('key');
+
+    if (urlKey) {
+      sessionStorage.setItem('apiKey', urlKey);
+      return urlKey;
+    }
+
+    return sessionStorage.getItem('apiKey');
   }, []);
 
   const addToCart = (item) => {

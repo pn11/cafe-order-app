@@ -1,6 +1,9 @@
 // Google Apps Script Web App Code
 // Deploy this as a web app with execute permissions set to "Anyone"
 
+// Authentication token - replace with your secret token
+const AUTH_TOKEN = 'your-secret-token-here';
+
 function doPost(e) {
   return handleRequest(e, 'POST');
 }
@@ -77,9 +80,14 @@ function handleRequest(e, method) {
   }
 
   if (method === 'GET') {
+    // Check for token in query parameters
+    const token = e.parameter ? e.parameter.token : null;
+    const isApproved = token === AUTH_TOKEN;
+
     const response = {
       message: 'Cafe Order App - Google Apps Script Web App',
-      status: 'active'
+      status: 'active',
+      approved: isApproved
     };
     return createResponse(JSON.stringify(response), headers);
   }
