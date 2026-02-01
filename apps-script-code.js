@@ -17,21 +17,24 @@ function doOptions(e) {
 }
 
 function handleRequest(e, method) {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Max-Age': '86400'
-  };
-
   if (method === 'OPTIONS') {
-    return createResponse('', headers);
+    return createResponse('');
   }
 
   if (method === 'POST') {
     try {
       // Parse the incoming data
       const data = JSON.parse(e.postData.contents);
+
+      // Validate token from request body
+      const requestToken = data.apiKey;
+      if (requestToken !== AUTH_TOKEN) {
+        return createResponse(JSON.stringify({
+          success: false,
+          error: 'Unauthorized',
+          message: 'Invalid or missing access token'
+        }));
+      }
 
       // Your Google Sheets ID (replace with your actual ORDER_SHEET_ID)
       const SHEET_ID = '1GTFaQY2E9Rz8pY2-W_Xdv-bJJJBIvWRuaorS8QNGj8o';
@@ -65,7 +68,7 @@ function handleRequest(e, method) {
         timestamp: timestamp
       };
 
-      return createResponse(JSON.stringify(response), headers);
+      return createResponse(JSON.stringify(response));
 
     } catch (error) {
       // Return error response
@@ -75,7 +78,7 @@ function handleRequest(e, method) {
         message: 'Failed to submit order'
       };
 
-      return createResponse(JSON.stringify(errorResponse), headers);
+      return createResponse(JSON.stringify(errorResponse));
     }
   }
 
@@ -89,18 +92,13 @@ function handleRequest(e, method) {
       status: 'active',
       approved: isApproved
     };
-    return createResponse(JSON.stringify(response), headers);
+    return createResponse(JSON.stringify(response));
   }
 }
 
-function createResponse(content, headers) {
+function createResponse(content) {
   const output = ContentService.createTextOutput(content);
   output.setMimeType(ContentService.MimeType.JSON);
-
-  // Set CORS headers
-  Object.keys(headers).forEach(key => {
-    output.setHeaders({[key]: headers[key]});
-  });
-
+  // CORS headers are handled automatically by Apps Script when deployed with "Anyone" access
   return output;
 }
