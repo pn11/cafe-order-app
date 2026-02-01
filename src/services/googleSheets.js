@@ -38,27 +38,34 @@ export const fetchMenuData = async () => {
 };
 
 export const submitOrder = async (orderData, apiKey) => {
-  try {
-    if (!APPS_SCRIPT_URL) {
-      throw new Error('Apps Script URL not configured. Please set REACT_APP_APPS_SCRIPT_URL in your .env file');
-    }
+  if (!APPS_SCRIPT_URL) {
+    throw new Error('Apps Script URL not configured. Please set REACT_APP_APPS_SCRIPT_URL in your .env file');
+  }
 
-    const response = await fetch(APPS_SCRIPT_URL, {
+  let response;
+  try {
+    response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: {
         'Content-Type': 'text/plain',
       },
-      body: JSON.stringify({ ...orderData, apiKey })
+      body: JSON.stringify({ ...orderData, apiKey }),
+      redirect: 'follow'
     });
-
-    // With no-cors mode, we can't read the response body
-    // A successful submission will have type 'opaque' and status 0
-    // If the request fails entirely, it will throw an error
-
-    return { success: true, message: 'Order submitted' };
   } catch (error) {
-    console.error('Error submitting order:', error);
-    throw error;
+    throw new Error('Network error. Please check your connection.');
   }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new Error('Server returned an invalid response. Please try again.');
+  }
+
+  if (!data.success) {
+    throw new Error(data.message || 'Order submission failed');
+  }
+
+  return data;
 };
