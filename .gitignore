@@ -26,3 +26,4 @@ yarn-error.log*
 apps-script-generated.js
 access-qr.png
 order-sheet-qr.png
+qr-codes.pdf
